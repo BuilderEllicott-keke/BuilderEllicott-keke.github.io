@@ -563,14 +563,11 @@
                 
                 if (error) {
                     console.error('Error saving status:', error);
-                    // Show user-friendly error
-                    showError('Failed to save. Please check your database setup.');
                 } else {
                     console.log(`Saved: ${itemName} -> ${status}`);
                 }
             } catch (error) {
                 console.error('Error saving status:', error);
-                showError('Connection failed. Please check your internet connection.');
             }
         }
         
@@ -583,12 +580,7 @@
                 
                 if (error) {
                     console.error('Error loading statuses:', error);
-                    // Check if it's a table not found error
-                    if (error.message.includes('relation "todo_items" does not exist')) {
-                        return false; // Table doesn't exist, need setup
-                    }
-                    showError('Failed to load data. Please check your database setup.');
-                    return false;
+                    return;
                 }
                 
                 // Apply loaded statuses to the UI
@@ -610,11 +602,8 @@
                 }
                 
                 updateStats();
-                return true; // Success
             } catch (error) {
                 console.error('Error loading statuses:', error);
-                showError('Connection failed. Please check your internet connection.');
-                return false;
             }
         }
         
@@ -643,13 +632,8 @@
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async function() {
-            // Try to load existing data first
-            const loadSuccess = await loadStatuses();
-            
-            // Only show setup instructions if database connection failed
-            if (!loadSuccess) {
-                setTimeout(showSetupInstructions, 1000);
-            }
+            // Try to load existing data
+            await loadStatuses();
             
             // Add hover text to status circles
             document.querySelectorAll('.status').forEach(status => {
