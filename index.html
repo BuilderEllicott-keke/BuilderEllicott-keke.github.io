@@ -654,43 +654,7 @@
         }
         
         // Setup instructions overlay
-        function showSetupInstructions() {
-            const overlay = document.createElement('div');
-            overlay.style.cssText = `
-                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                background: rgba(0,0,0,0.8); z-index: 1000;
-                display: flex; align-items: center; justify-content: center;
-                color: white; font-family: inherit;
-            `;
-            
-            overlay.innerHTML = `
-                <div style="background: white; color: black; padding: 30px; border-radius: 10px; max-width: 600px; margin: 20px;">
-                    <h2 style="margin-top: 0;">Create Database Table</h2>
-                    <p>You need to create the database table in Supabase:</p>
-                    <ol style="text-align: left; line-height: 1.6;">
-                        <li>Open <a href="https://upkhpodaivyrifjvhuad.supabase.co" target="_blank">your Supabase dashboard</a></li>
-                        <li>Go to <strong>SQL Editor</strong> (left sidebar)</li>
-                        <li>Copy and paste this SQL code:</li>
-                    </ol>
-                    <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px;">CREATE TABLE todo_items (
-    id BIGSERIAL PRIMARY KEY,
-    item_name TEXT NOT NULL,
-    category TEXT NOT NULL,
-    status TEXT NOT NULL,
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(item_name, category)
-);</pre>
-                    <p>4. Click <strong>Run</strong> to create the table</p>
-                    <p>5. Refresh this page and start using it!</p>
-                    <button onclick="this.parentElement.parentElement.remove()" 
-                            style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
-                        Got it!
-                    </button>
-                </div>
-            `;
-            
-            document.body.appendChild(overlay);
-        }
+        
         
         // Show setup instructions if database table doesn't exist
         
