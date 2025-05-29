@@ -583,8 +583,12 @@
                 
                 if (error) {
                     console.error('Error loading statuses:', error);
+                    // Check if it's a table not found error
+                    if (error.message.includes('relation "todo_items" does not exist')) {
+                        return false; // Table doesn't exist, need setup
+                    }
                     showError('Failed to load data. Please check your database setup.');
-                    return;
+                    return false;
                 }
                 
                 // Apply loaded statuses to the UI
@@ -606,9 +610,11 @@
                 }
                 
                 updateStats();
+                return true; // Success
             } catch (error) {
                 console.error('Error loading statuses:', error);
                 showError('Connection failed. Please check your internet connection.');
+                return false;
             }
         }
         
@@ -637,11 +643,13 @@
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async function() {
-            // Show setup instructions
-            setTimeout(showSetupInstructions, 1000);
+            // Try to load existing data first
+            const loadSuccess = await loadStatuses();
             
-            // Try to load existing data
-            await loadStatuses();
+            // Only show setup instructions if database connection failed
+            if (!loadSuccess) {
+                setTimeout(showSetupInstructions, 1000);
+            }
             
             // Add hover text to status circles
             document.querySelectorAll('.status').forEach(status => {
@@ -706,8 +714,7 @@
             document.body.appendChild(overlay);
         }
         
-        // Show setup instructions if database table doesn't exist
-        setTimeout(showSetupInstructions, 1000);
+        // Removed automatic popup - only shows when database connection fails
     </script>
 </body>
 </html>
