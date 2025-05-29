@@ -635,20 +635,6 @@
             }
         });
         
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Show setup instructions
-            setTimeout(showSetupInstructions, 1000);
-            
-            // Try to load existing data
-            await loadStatuses();
-            
-            // Add hover text to status circles
-            document.querySelectorAll('.status').forEach(status => {
-                status.style.cursor = 'pointer';
-                status.title = 'Click to change status';
-            });
-        });
         
         // Show error messages to user
         function showError(message) {
