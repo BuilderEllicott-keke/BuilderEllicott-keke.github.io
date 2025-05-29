@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Liveries & Uniforms Tracker</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .subsection {
+            margin-bottom: 25px;
+        }
+        
+        .subsection-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #555;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        th {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+        }
+        
+        .status.done { background-color: #28a745; border-color: #1e7e34; }
+        .status.pending { background-color: #ffc107; border-color: #e0a800; }
+        .status.not-completed { background-color: #dc3545; border-color: #c82333; }
+        .status.not-doing { background-color: #6f42c1; border-color: #5a2d91; }
+        .status.unknown { background-color: #6c757d; border-color: #545b62; }
+        
+        .item-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Todo Liveries & Uniforms Tracker</h1>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #28a745;"></div>
+                    <span>Done</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #ffc107;"></div>
+                    <span>Pending Approval</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #dc3545;"></div>
+                    <span>Not Completed</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #6f42c1;"></div>
+                    <span>Not Doing</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-items">0</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="done-count">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pending-count">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="remaining-count">0</div>
+                    <div class="stat-label">Not Completed</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Liveries</div>
+                
+                <div class="subsection">
+                    <div class="subsection-title">Civ Jobs</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Bank truck</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status pending"></span></td><td class="item-name">News Van</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Dump Truck</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Prime Eques Taxi 2003</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Scavenger Security 2013</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Scavenger Taxi 2020</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Farm Tractor 5100M</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Forklift</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Front Loader Garbage Truck</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Front Loader Tractor</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Fuel Tanker</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Garbage Truck</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">La Mesa Food Truck</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Leland Limo 2018</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Mail Truck</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Mail Van</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Metro Transit Bus</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Shuttle Bus</td><td>Civ Jobs</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Three Guys Food Truck</td><td>Civ Jobs</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="subsection">
+                    <div class="subsection-title">LCDOT</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Bucket Truck</td><td>LCDOT</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Chevlon Platoro Utility Truck</td><td>LCDOT</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">DOT Flatbed Cab (Same for Salt Truck, & Cone Truck)</td><td>LCDOT</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Advance+ Roadside Assist 2020</td><td>LCDOT</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Advance+ Tow Truck 2020</td><td>LCDOT</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Advance+ Utility 2019</td><td>LCDOT</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Street Sweeper</td><td>LCDOT</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Vellfire Evertt 1995</td><td>LCDOT</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="subsection">
+                    <div class="subsection-title">LCSO</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Equipment Trailer</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">ATV</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Advance SSV</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Advance Electric</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Chevlon Platoro PPV</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Celestial Truckatron 2024</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Bullhorn BH15</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">1988 Bullhorn Foreman PPV</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">2022 Bullhorn Determinator SFP Fury</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Bullhorn Prancer 2011</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Bullhorn Prancer Pursuit</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Bullhorn Prancer Pursuit Widebody</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Chevlon Amigo LZR 2011</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Chevlon Amigo ZL1</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Chevlon Captain PPV</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Chevlon Corbeta RZR</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Police Interceptor Sedan</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Prime Eques</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Stallion 350</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Canyon Descender</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Chevlon Commuter Van</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Emergency Services Falcon Advance+ 2020 Truck</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Mobile Command Center</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">SWAT Bearcat</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Trailer</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Interceptor Utility</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon eStallion 2024</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Chevlon Camion PPV</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Chevlon Camion 2008</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Bullhorn Pueblo Pursuit</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">BKM Munich</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">2022 Falcon Traveller</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">2022 Avantismo Q8</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">2021 Chevlon Camion PPV</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">2020 Falcon Interceptor Utility</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">2013 Falcon Interceptor Utility</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">2008 Chevlon Camion PPV</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">2000 Chevlon Camion PPV</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Falcon Rampage</td><td>LCSO</td></tr>
+                                <tr><td><span class="status unknown"></span></td><td class="item-name">Prison Bus</td><td>LCSO</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="subsection">
+                    <div class="subsection-title">FD (Fire Department)</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Tanker</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Squad Falcon Advance+</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Special Operations Unit</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Mobile Command</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Medical Bus</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Ladder Truck</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">International Ambulance</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Heavy Tanker</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Heavy Rescue</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Fourwheeler</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Fire Engine</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Interceptor Utility</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Command Truck</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Brush Truck</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Chevlon Camion PPV</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Canyon Descender</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Bullhorn Prancer Pursuit</td><td>FD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Bullhorn Ambulance</td><td>FD</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="subsection">
+                    <div class="subsection-title">RCPD</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Equipment Trailer</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">ATV</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Advance SSV</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Advance Electric</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Chevlon Platoro PPV</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Celestial Truckatron 2024</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Bullhorn BH15</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">1988 Bullhorn Foreman PPV</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">2022 Bullhorn Determinator SFP Fury</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Bullhorn Prancer 2011</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Bullhorn Prancer Pursuit</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Bullhorn Prancer Pursuit Widebody</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Chevlon Amigo LZR 2011</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Chevlon Amigo ZL1</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Chevlon Captain PPV</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Chevlon Corbeta RZR</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Police Interceptor Sedan</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Prime Eques</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Stallion 350</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Canyon Descender</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Chevlon Commuter Van</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Emergency Services Falcon Advance+ 2020 Truck</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Mobile Command Center</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">SWAT Bearcat</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Trailer</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Interceptor Utility</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon eStallion 2024</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Chevlon Camion PPV</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Chevlon Camion 2008</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Bullhorn Pueblo Pursuit</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">BKM Munich</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">2022 Falcon Traveller</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">2022 Avantismo Q8</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">2021 Chevlon Camion PPV</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">2020 Falcon Interceptor Utility</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">2013 Falcon Interceptor Utility</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">2008 Chevlon Camion PPV</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">2000 Chevlon Camion PPV</td><td>RCPD</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Falcon Rampage</td><td>RCPD</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Uniforms</div>
+                
+                <div class="subsection">
+                    <div class="subsection-title">RCPD Uniforms</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Traffic Control</td><td>RCPD Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">RCPD Uniform A</td><td>RCPD Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">RCPD Uniform B</td><td>RCPD Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">RCPD Uniform C</td><td>RCPD Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">RCPD Supervisor Uniform</td><td>RCPD Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">RCPD Dispatcher Uniform</td><td>RCPD Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">RCPD HICOM Uniform</td><td>RCPD Uniforms</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="subsection">
+                    <div class="subsection-title">LCSO Uniforms</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="status done"></span></td><td class="item-name">Staff</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Staff Supervisor</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Ownership</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Sheriff Patrol</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Sheriff SWAT</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Highway Patrol A</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Highway Patrol B</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Highway Patrol SWAT</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Homeland Security</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Homeland Security w/ Vest</td><td>LCSO Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Homeland Security SWAT</td><td>LCSO Uniforms</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="subsection">
+                    <div class="subsection-title">LCDOT Uniforms</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Roadworker</td><td>LCDOT Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Electrical Worker</td><td>LCDOT Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Sewage Worker</td><td>LCDOT Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Traffic Control</td><td>LCDOT Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Towing Company Uniform</td><td>LCDOT Uniforms</td></tr>
+                                <tr><td><span class="status not-completed"></span></td><td class="item-name">Event Staff</td><td>LCDOT Uniforms</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="subsection">
+                    <div class="subsection-title">FD Uniforms</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="3" style="text-align: center; color: #666; font-style: italic;">No clue what to do here</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js"></script>
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://upkhpodaivyrifjvhuad.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwa2hwb2RhaXZ5cmlmanZodWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTc1MTksImV4cCI6MjA2NDEzMzUxOX0.1YjUHg5CQwpHZmSufOHmMTHKv8ZUuNjiMBO0K9ZiADg';
+        
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // In-memory storage for demo purposes (replace with actual Supabase when deployed)
+        let itemStatuses = {};
+        
+        // Calculate and display statistics
+        function updateStats() {
+            const doneCount = document.querySelectorAll('.status.done').length;
+            const pendingCount = document.querySelectorAll('.status.pending').length;
+            const notCompletedCount = document.querySelectorAll('.status.not-completed').length;
+            const totalCount = doneCount + pendingCount + notCompletedCount + document.querySelectorAll('.status.unknown').length;
+            
+            document.getElementById('total-items').textContent = totalCount;
+            document.getElementById('done-count').textContent = doneCount;
+            document.getElementById('pending-count').textContent = pendingCount;
+            document.getElementById('remaining-count').textContent = notCompletedCount;
+        }
+        
+        // Save status to cloud database
+        async function saveStatus(itemName, category, status) {
+            try {
+                const { data, error } = await supabase
+                    .from('todo_items')
+                    .upsert({
+                        item_name: itemName,
+                        category: category,
+                        status: status,
+                        updated_at: new Date().toISOString()
+                    }, {
+                        onConflict: 'item_name,category'
+                    });
+                
+                if (error) {
+                    console.error('Error saving status:', error);
+                    // Show user-friendly error
+                    showError('Failed to save. Please check your database setup.');
+                } else {
+                    console.log(`Saved: ${itemName} -> ${status}`);
+                }
+            } catch (error) {
+                console.error('Error saving status:', error);
+                showError('Connection failed. Please check your internet connection.');
+            }
+        }
+        
+        // Load status from cloud database
+        async function loadStatuses() {
+            try {
+                const { data, error } = await supabase
+                    .from('todo_items')
+                    .select('*');
+                
+                if (error) {
+                    console.error('Error loading statuses:', error);
+                    showError('Failed to load data. Please check your database setup.');
+                    return;
+                }
+                
+                // Apply loaded statuses to the UI
+                if (data) {
+                    data.forEach(item => {
+                        const statusElements = document.querySelectorAll('.status');
+                        statusElements.forEach(element => {
+                            const row = element.closest('tr');
+                            const nameCell = row.querySelector('.item-name');
+                            const categoryCell = row.querySelectorAll('td')[2];
+                            
+                            if (nameCell && categoryCell && 
+                                nameCell.textContent === item.item_name && 
+                                categoryCell.textContent === item.category) {
+                                element.className = `status ${item.status}`;
+                            }
+                        });
+                    });
+                }
+                
+                updateStats();
+            } catch (error) {
+                console.error('Error loading statuses:', error);
+                showError('Connection failed. Please check your internet connection.');
+            }
+        }
+        
+        // Make status circles clickable to change status
+        document.addEventListener('click', async function(e) {
+            if (e.target.classList.contains('status')) {
+                const currentStatus = e.target.className.split(' ')[1];
+                const statuses = ['not-completed', 'pending', 'done', 'not-doing', 'unknown'];
+                const currentIndex = statuses.indexOf(currentStatus);
+                const nextIndex = (currentIndex + 1) % statuses.length;
+                const newStatus = statuses[nextIndex];
+                
+                // Update UI
+                e.target.className = 'status ' + newStatus;
+                updateStats();
+                
+                // Get item details for saving
+                const row = e.target.closest('tr');
+                const itemName = row.querySelector('.item-name').textContent;
+                const category = row.querySelectorAll('td')[2].textContent;
+                
+                // Save to cloud database
+                await saveStatus(itemName, category, newStatus);
+            }
+        });
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Show setup instructions
+            setTimeout(showSetupInstructions, 1000);
+            
+            // Try to load existing data
+            await loadStatuses();
+            
+            // Add hover text to status circles
+            document.querySelectorAll('.status').forEach(status => {
+                status.style.cursor = 'pointer';
+                status.title = 'Click to change status';
+            });
+        });
+        
+        // Show error messages to user
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 1000;
+                background: #dc3545; color: white; padding: 15px 20px;
+                border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                max-width: 300px; font-family: inherit;
+            `;
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+        
+        // Setup instructions overlay
+        function showSetupInstructions() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); z-index: 1000;
+                display: flex; align-items: center; justify-content: center;
+                color: white; font-family: inherit;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="background: white; color: black; padding: 30px; border-radius: 10px; max-width: 600px; margin: 20px;">
+                    <h2 style="margin-top: 0;">Create Database Table</h2>
+                    <p>You need to create the database table in Supabase:</p>
+                    <ol style="text-align: left; line-height: 1.6;">
+                        <li>Open <a href="https://upkhpodaivyrifjvhuad.supabase.co" target="_blank">your Supabase dashboard</a></li>
+                        <li>Go to <strong>SQL Editor</strong> (left sidebar)</li>
+                        <li>Copy and paste this SQL code:</li>
+                    </ol>
+                    <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px;">CREATE TABLE todo_items (
+    id BIGSERIAL PRIMARY KEY,
+    item_name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    status TEXT NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(item_name, category)
+);</pre>
+                    <p>4. Click <strong>Run</strong> to create the table</p>
+                    <p>5. Refresh this page and start using it!</p>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                        Got it!
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+        }
+        
+        // Show setup instructions if database table doesn't exist
+        setTimeout(showSetupInstructions, 1000);
+    </script>
+</body>
+</html>
